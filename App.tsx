@@ -1,32 +1,27 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import NumericInput from './src/components/atoms/numericInput';
-
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigator from './src/navigation/appNavigator';
+import { StoreProvider } from './src/store/storeContext';
 function App() {
-  const [quantity, setQuantity] = useState(1);
-
   return (
-    <SafeAreaProvider style={styles.container}>
-      <View style={styles.content}>
-        <NumericInput
-          value={quantity}
-          onIncrease={() => setQuantity(currentValue => currentValue + 1)}
-          onDecrease={() => setQuantity(currentValue => currentValue - 1)}
-        />
-      </View>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <StoreProvider>
+          <NavigationContainer>
+            <AppNavigator />
+          </NavigationContainer>
+        </StoreProvider>
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
   },
 });
 
