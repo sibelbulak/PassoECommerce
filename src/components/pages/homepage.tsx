@@ -1,71 +1,40 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import Nav from '../atoms/nav';
 import SearchBar from '../atoms/searchBar/searchBar';
 import HomeCardItem from '../molecules/homeCardItem/homeCardItem';
 import FilterModal from '../molecules/filterModal/filterModal';
 import { getProducts, type Product } from '../../services/productService';
-import shuffleArray from '../../utils/shuffleArray';
 import type { RootStackParamList } from '../../navigation/types';
 import { useStore } from '../../store/storeContext';
+import { useDebounce } from '../../hooks/useDebounce';
 type HomePageProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 const HomePage = ({ navigation }: HomePageProps) => {
   const { toggleFavorite, isFavorite } = useStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [searchText, setSearchText] = useState('');
-  const [debouncedSearchText, setDebouncedSearchText] = useState('');
+  const debouncedSearchText = useDebounce(searchText.trim(), 500);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [minimumPrice, setMinimumPrice] = useState<number | null>(null);
   const [maximumPrice, setMaximumPrice] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-
     const loadProducts = async () => {
       try {
-        setLoading(true);
         setError(null);
 
         const productList = await getProducts();
 
-        if (isMounted) {
-          setProducts(shuffleArray(productList));
-        }
+        setProducts(productList);
       } catch {
-        if (isMounted) {
-          setError('Ürünler yüklenemedi. Lütfen tekrar deneyin.');
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        setError('Ürünler yüklenemedi. Lütfen tekrar deneyin.');
       }
     };
 
     loadProducts();
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchText(searchText.trim());
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchText]);
 
   const visibleProducts = useMemo(() => {
     const normalizedSearchText = debouncedSearchText.toLocaleLowerCase('tr-TR');
@@ -91,14 +60,6 @@ const HomePage = ({ navigation }: HomePageProps) => {
     setMaximumPrice(maximum);
     setFilterModalVisible(false);
   };
-
-  if (loading) {
-    return (
-      <View style={styles.centeredContent}>
-        <ActivityIndicator color="#E52B32" size="large" />
-      </View>
-    );
-  }
 
   if (error) {
     return (

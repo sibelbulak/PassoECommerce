@@ -1,4 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
 
 type LoadingContextValue = {
   //Global loading sisteminin sunacağı bilgileri tanımlıyor.
@@ -22,14 +27,14 @@ export const LoadingProvider = ({ children }: LoadingProviderProps) => {
   const [isLoading, setIsLoading] = useState(false);
   
   //Loader’ı açar.
-  const showLoading = () => {
+  const showLoading = useCallback(() => {
     setIsLoading(true);
-  };
+  }, []);
 
   //Loader’ı kapatır.
-  const hideLoading = () => {
+  const hideLoading = useCallback(() => {
     setIsLoading(false);
-  };
+  }, []);
 
   return (
     <LoadingContext.Provider //Bu üç bilgiyi alt componentlere açar:

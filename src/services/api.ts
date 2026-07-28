@@ -1,3 +1,5 @@
+//API’nin genel adresini ve ortak Axios ayarlarını tutar.
+
 import axios from 'axios';
 
 const api = axios.create({

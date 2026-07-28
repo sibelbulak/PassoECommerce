@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
-  Alert,
-  ActivityIndicator,
   Image,
   Pressable,
   ScrollView,
@@ -26,7 +24,6 @@ const ProductDetailPage = ({ navigation, route }: ProductDetailPageProps) => {
   const { isFavorite, toggleFavorite, addToCart } = useStore();
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,7 +31,6 @@ const ProductDetailPage = ({ navigation, route }: ProductDetailPageProps) => {
 
     const loadProduct = async () => {
       try {
-        setLoading(true);
         setError(null);
 
         const productDetail = await getProductById(productId);
@@ -46,10 +42,6 @@ const ProductDetailPage = ({ navigation, route }: ProductDetailPageProps) => {
         if (isMounted) {
           setError('Ürün detayı yüklenemedi.');
         }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
       }
     };
 
@@ -59,14 +51,6 @@ const ProductDetailPage = ({ navigation, route }: ProductDetailPageProps) => {
       isMounted = false;
     };
   }, [productId]);
-
-  if (loading) {
-    return (
-      <View style={styles.centeredContent}>
-        <ActivityIndicator color="#E52B32" size="large" />
-      </View>
-    );
-  }
 
   if (error || !product) {
     return (
@@ -123,7 +107,7 @@ const ProductDetailPage = ({ navigation, route }: ProductDetailPageProps) => {
         <Pressable
           onPress={() => {
             addToCart(product, quantity);
-            Alert.alert('Sepet', 'Ürün sepete eklendi.');
+            navigation.navigate('Basket');
           }}
           style={styles.buyButton}
         >

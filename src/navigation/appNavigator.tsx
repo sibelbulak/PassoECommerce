@@ -10,7 +10,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const AppNavigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="Home" //Uygulama ilk açıldığında gösterilecek sayfayı belirler.
       screenOptions={{
         headerShown: false,
       }}
